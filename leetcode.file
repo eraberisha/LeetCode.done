@@ -2,7 +2,6 @@
 #include <vector>
 #include <stack>
 #include <queue>
-#include <algorithm>
 #include <unordered_map>
 #include <unordered_set>
 using namespace std;
@@ -81,21 +80,21 @@ public:
         int n = deck.size();
         vector<int>ans(n);
         sort(deck.begin(), deck.end());
-        queue<int>dq;
+        queue<int>q;
         for (int i = 0; i < n; i++) {
-            dq.push(i);
+            q.push(i);
         }
 
         int chance = 0;
         int flip = 0;
-        while (dq.size() > 0) {
+        while (q.size() > 0) {
             if (flip == 0) {
-                ans[dq.front()] = deck[chance++];
-                dq.pop();
+                ans[q.front()] = deck[chance++];
+                q.pop();
             }
             else {
-                dq.push(dq.front());
-                dq.pop();
+                q.push(q.front());
+                q.pop();
             }
             flip ^= 1;
 
@@ -228,8 +227,9 @@ public:
         unordered_map<int, int>mp;
         vector<int>res;
         for (int i = 0; i < nums.size(); i++) {
-            if (mp.find(nums[i]) == mp.end())
+            if (mp.find(nums[i]) == mp.end()) {
                 mp[nums[i]] = i;
+            }
             if (mp.find(target - nums[i]) != mp.end() && i != mp[target - nums[i]])
             {
                 res.push_back(i);
@@ -277,12 +277,14 @@ public:
 
     int numJewelsInStones(string J, string S) {
         int count = 0;
-        for (char c : S) {
-            if (J.find(c) !=-1)
+        for (int i = 0; i < S.size();) {
+            if (J.find(S.at(i) !=-1))
                 count++;
         }
         return count;
     }
+
+
     vector<int> intersection(vector<int>& nums1, vector<int>& nums2) {
         unordered_set<int> set1(nums1.begin(), nums1.end());
         unordered_set<int> resultSet;
@@ -406,7 +408,7 @@ int main() {
     cout << "(Press 15) Intersection of Two Arrays." << endl;
     cout << endl;
     cout << "Detyrat me Binary tree:" << endl;
-    cout << "(Press 16) Maximun Depth of Binary Tree." << endl;
+    cout << "(Press 16) Maximum Depth of Binary Tree." << endl;
     cout << "(Press 17) Merged Binary Tree." << endl;
     cout << "(Press 18) Average of Levels in Binary Tree." << endl;
     cout << "(Press 19) Same tree." << endl;
@@ -560,7 +562,7 @@ int main() {
             delete temp;
         }
         cout << endl;
-        cout << "Kompleksiteti kohor: O(n)\nKompleksiteti hapsinor: O(n)\n";
+        cout << "Kompleksiteti kohor: O(n)\nKompleksiteti hapsinor: O(1)\n";
         break;
     }
     case 9:
