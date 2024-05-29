@@ -1,0 +1,818 @@
+#include <iostream>
+#include <vector>
+#include <stack>
+#include <queue>
+#include <algorithm>
+#include <unordered_map>
+#include <unordered_set>
+using namespace std;
+
+struct ListNode {
+    int val;
+    ListNode* next;
+    ListNode(int val = 0, ListNode* next = nullptr) {
+        this->val = val;
+        this->next = next;
+    }
+};
+
+struct TreeNode {
+    int val;
+    TreeNode* left;
+    TreeNode* right;
+    TreeNode(int x) {
+            val = x;
+            left = nullptr;
+            right = nullptr;
+    }
+};
+
+void printTree(TreeNode* root) {
+    if (root == nullptr) {
+        return;
+    }
+    cout << root->val << " ";
+    printTree(root->left);
+    printTree(root->right);
+}
+
+class Solution {
+public:
+    vector<int> finalPrices(vector<int>& prices) {
+        stack<int> s;
+        vector<int> result = prices;
+        for (int i = 0; i < prices.size(); i++) {
+            while (!s.empty() && prices[s.top()] >= prices[i]) {
+                result[s.top()] = prices[s.top()] - prices[i];
+                s.pop();
+            }
+            s.push(i);
+        }
+        return result;
+    }
+
+
+
+    string removeDuplicates(string s) {
+        stack<char> st;
+
+        for (int i = 0; i < s.size(); i++) {
+            char c = s[i];
+            if (!st.empty() && st.top() == c) {
+                st.pop();
+            }
+            else {
+                st.push(c);
+            }
+        }
+
+        string ans;
+        while (!st.empty()) {
+            ans = st.top() + ans;
+            st.pop();
+        }
+
+        return ans;
+    }
+
+
+
+    vector<int> deckRevealedIncreasing(vector<int>& deck) {
+        int n = deck.size();
+        vector<int>ans(n);
+        sort(deck.begin(), deck.end());
+        queue<int>dq;
+        for (int i = 0; i < n; i++) {
+            dq.push(i);
+        }
+
+        int chance = 0;
+        int flip = 0;
+        while (dq.size() > 0) {
+            if (flip == 0) {
+                ans[dq.front()] = deck[chance++];
+                dq.pop();
+            }
+            else {
+                dq.push(dq.front());
+                dq.pop();
+            }
+            flip ^= 1;
+
+        }
+        return ans;
+    }
+
+
+
+    int lastStoneWeight(vector<int>& stones) {
+        priority_queue<int>pq(stones.begin(), stones.end());
+        while (pq.size() > 1) {
+            int x = pq.top();
+            pq.pop();
+            int y = pq.top();
+            pq.pop();
+            if (x != y) {
+                pq.push(x - y);
+            }
+        }
+        if (pq.empty()) {
+            return 0;
+        }
+        return pq.top();
+    }
+
+
+
+    int maxProduct(vector<int>& nums) {
+        priority_queue<int> pq(nums.begin(), nums.end());
+
+        int max1 = pq.top();
+        pq.pop();
+        int max2 = pq.top();
+        pq.pop();
+
+        return (max1 - 1) * (max2 - 1);
+    }
+
+
+
+    ListNode* middleNode(ListNode* head) {
+        int n = 0;
+        ListNode* slow = head, * fast = head;
+        while (fast != NULL && fast->next != NULL) {
+            slow = slow->next;
+            fast = fast->next->next;
+        }
+        return slow;
+    }
+
+
+
+    ListNode* reverseList(ListNode* head) {
+        ListNode* cur = head;
+        ListNode* next = NULL;
+        ListNode* prev = NULL;
+        while (cur != NULL) {
+            next = cur->next;
+            cur->next = prev;
+            prev = cur;
+            cur = next;
+        }
+        head = prev;
+        return head;
+    }
+
+
+
+    ListNode* removeElements(ListNode* head, int val) {
+        if (!head) {
+            return head;
+        }
+        else {
+            ListNode* h = removeElements(head->next, val);
+            if (head->val == val)
+            {
+                return h;
+            }
+            else {
+                head->next = h;
+            }
+            return head;
+        }
+    }
+
+
+
+    ListNode* deleteDuplicates(ListNode* head) {
+        ListNode* node = head;
+        while (node != nullptr && node->next != nullptr) {
+            if (node->val == node->next->val) {
+                ListNode* temp = node->next;
+                node->next = node->next->next;
+                delete temp;
+            }
+            else {
+                node = node->next;
+            }
+        }
+        return head;
+    }
+
+
+
+    bool isPalindrome(ListNode* head) {
+        ListNode* curr = head;
+        ListNode* temp = head;
+        stack<int> st;
+        while (curr != NULL) {
+            st.push(curr->val);
+            curr = curr->next;
+        }
+        while (temp != NULL) {
+            int x = st.top();
+            st.pop();
+            if (x != temp->val) {
+                return false;
+            }
+            else {
+                temp = temp->next;
+            }
+        }
+        return true;
+    }
+
+
+
+    vector<int> twoSum(vector<int>& nums, int target) {
+        unordered_map<int, int>mp;
+        vector<int>res;
+        for (int i = 0; i < nums.size(); i++) {
+            if (mp.find(nums[i]) == mp.end())
+                mp[nums[i]] = i;
+            if (mp.find(target - nums[i]) != mp.end() && i != mp[target - nums[i]])
+            {
+                res.push_back(i);
+                res.push_back(mp[target - nums[i]]);
+                break;
+            }
+        }
+        return res;
+    }
+
+
+
+    int missingNumber(vector<int>& nums) {
+        unordered_map<int, bool> hash_table;
+
+        for (int i = 0; i < nums.size(); i++) {
+            hash_table[nums.at(i)] = true;
+        }
+
+        for (int i = 0; i <= nums.size(); ++i) {
+            if (hash_table.find(i) == hash_table.end()) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+
+
+    vector<int> DisappearedNumbers(vector<int>& nums) {
+        vector<int> result;
+        unordered_set<int> numSet(nums.begin(), nums.end());
+
+        for (int i = 1; i <= nums.size(); ++i) {
+            if (numSet.find(i) == numSet.end()) {
+                result.push_back(i);
+            }
+        }
+
+        return result;
+    }
+   
+
+
+    int numJewelsInStones(string J, string S) {
+        int count = 0;
+        for (char c : S) {
+            if (J.find(c) !=-1)
+                count++;
+        }
+        return count;
+    }
+    vector<int> intersection(vector<int>& nums1, vector<int>& nums2) {
+        unordered_set<int> set1(nums1.begin(), nums1.end());
+        unordered_set<int> resultSet;
+
+        for (int i = 0; i < nums2.size(); i++) {
+            if (set1.count(nums2.at(i))) {
+                resultSet.insert(nums2.at(i));
+            }
+        }
+
+        return vector<int>(resultSet.begin(), resultSet.end());
+    }
+
+
+
+    int maxDepth(TreeNode* root) {
+        if (root == nullptr) {
+            return 0;
+        }
+
+        int leftDepth = maxDepth(root->left);
+        int rightDepth = maxDepth(root->right);
+
+        return 1 + max(leftDepth, rightDepth);
+    }
+
+
+
+    TreeNode* mergeTrees(TreeNode* root1, TreeNode* root2) {
+        if (!root1 && !root2) {
+            return nullptr;
+        }
+        else if (!root1) {
+            return root2;
+        }
+        else if (!root2) {
+            return root1;
+        }
+
+        TreeNode* mergedNode = new TreeNode(root1->val + root2->val);
+        mergedNode->left = mergeTrees(root1->left, root2->left);
+        mergedNode->right = mergeTrees(root1->right, root2->right);
+
+        return mergedNode;
+    }
+
+
+
+    vector<double> averageOfLevels(TreeNode* root) {
+        vector<double> averages;
+        if (root == nullptr) return averages;
+
+        queue<TreeNode*> q;
+        q.push(root);
+
+        while (!q.empty()) {
+            int size = q.size();
+            double levelSum = 0;
+            for (int i = 0; i < size; ++i) {
+                TreeNode* node = q.front();
+                q.pop();
+                levelSum += node->val;
+                if (node->left) q.push(node->left);
+                if (node->right) q.push(node->right);
+            }
+            averages.push_back(levelSum / size);
+        }
+
+        return averages;
+    }
+
+
+
+    bool isSameTree(TreeNode* p, TreeNode* q) {
+        if (p == nullptr && q == nullptr) {
+            return true;
+        }
+        if (p == nullptr || q == nullptr) {
+            return false;
+        }
+        return (p->val == q->val) &&
+            isSameTree(p->left, q->left) &&
+            isSameTree(p->right, q->right);
+    }
+
+
+
+    TreeNode* invertTree(TreeNode* root) {
+        if (root == nullptr) {
+            return nullptr;
+        }
+        TreeNode* temp = root->left;
+        root->left = invertTree(root->right);
+        root->right = invertTree(temp);
+        return root;
+    }
+  
+};
+int main() {
+    int zgjedhja;
+    cout << "Zgjidhni nje funksion: " << endl;
+    cout << "Detyrat me stack dhe queue:" << endl;
+    cout << "(Press 1) Final Prices With a Special Discount in a Shop." << endl;
+    cout << "(Press 2) Remove All Adjacent Duplicates In String." << endl;
+    cout << "(Press 3) Reveal Cards in Increasing Order." << endl;
+    cout << "(Press 4) Last Stone Weight." << endl;
+    cout << "(Press 5) Maximum Product of Two Elements in an Array." << endl;
+    cout << endl;
+    cout << "Detyrat me lista te lidhura:" << endl;
+    cout << "(Press 6) Middle of the Linked List." << endl;
+    cout << "(Press 7) Reverse Linked List." << endl;
+    cout << "(Press 8) Remove Linked List Elements." << endl;
+    cout << "(Press 9) Remove Duplicates from Sorted List." << endl;
+    cout << "(Press 10) Palindrome Linked List." << endl;
+    cout << endl;
+    cout << "Detyrat me Hash Table:" << endl;
+    cout << "(Press 11) Two Sum." << endl;
+    cout << "(Press 12) Missing Number." << endl;
+    cout << "(Press 13) Find All Numbers Disappeared in an Array." << endl;
+    cout << "(Press 14) Jewels and Stones."<< endl;
+    cout << "(Press 15) Intersection of Two Arrays." << endl;
+    cout << endl;
+    cout << "Detyrat me Binary tree:" << endl;
+    cout << "(Press 16) Maximun Depth of Binary Tree." << endl;
+    cout << "(Press 17) Merged Binary Tree." << endl;
+    cout << "(Press 18) Average of Levels in Binary Tree." << endl;
+    cout << "(Press 19) Same tree." << endl;
+    cout << "(Press 20) Invert Binary tree." << endl;
+
+    cin >> zgjedhja;
+    cout << endl;
+    Solution obj;
+    Solution s;
+
+    switch (zgjedhja)
+    {
+    case 1:
+    {
+        vector<int> prices = { 8, 4, 6, 2, 3 };
+        vector<int> finalPrices = obj.finalPrices(prices);
+
+        cout << "Prices: ";
+        for (int i = 0; i < prices.size(); i++) {
+            cout << prices[i] << " ";
+        }
+        cout << endl;
+        cout << "Final prices: ";
+        for (int i = 0; i < finalPrices.size(); i++) {
+            cout << finalPrices[i] << " ";
+        }
+        cout << endl;
+        cout << "Kompleksiteti kohor: O(n) \nKompleksiteti hapsinor: O(n)\n";
+        break;
+    }
+    case 2:
+    {
+        string s = "eerraaa";
+        string result = obj.removeDuplicates(s);
+        cout << "String: " << s << endl;
+        cout << "Final string after duplicate removals: " << result << endl;
+        cout << "Kompleksiteti kohor: O(n)\nKompleksiteti hapsinor: O(n)\n";
+        break;
+    }
+    case 3:
+    {
+        vector<int> deck = { 17, 13, 11, 2, 3, 5, 7 };
+        cout << "Input: ";
+        for (int i = 0; i < deck.size(); i++) {
+            cout << deck[i] << " ";
+        }
+        cout << endl;
+        vector<int> result = obj.deckRevealedIncreasing(deck);
+        cout << "Output: ";
+        for (int i = 0; i < result.size(); i++) {
+            cout << result[i] << " ";
+        }
+        cout << endl;
+        cout << "Kompleksiteti kohor: O(n)\nKompleksiteti hapsinor: O(n)\n";
+        break;
+    }
+    case 4:
+    {
+        vector<int> stones = { 2, 7, 4, 1, 8, 1 };
+        int result = obj.lastStoneWeight(stones);
+        cout << "Weight of stones in the beginning: ";
+        for (int i = 0; i < stones.size(); i++) {
+            cout << stones.at(i) << " ";
+        }cout << endl;
+        cout << "Weight of the last remaining stone: " << result << endl;
+        cout << "Kompleksiteti kohor: O(nlogn)\nKompleksiteti hapsinor: O(n)\n";
+        break;
+    }
+    case 5:
+    {
+        vector<int> nums = { 3, 4, 5, 2 };
+        int result = obj.maxProduct(nums);
+        cout << "Input: ";
+        for (int i = 0; i < nums.size(); i++) {
+            cout << nums.at(i) << " ";
+        }
+        cout << endl;
+        cout << "Maximum product: " << result << endl;
+        cout << "Kompleksiteti kohor: O(nlogn)\nKompleksiteti hapsinor: O(n)\n";
+        break;
+    }
+    case 6:
+    {
+        ListNode* head = new ListNode(1);
+        head->next = new ListNode(2);
+        head->next->next = new ListNode(3);
+        head->next->next->next = new ListNode(4);
+        head->next->next->next->next = new ListNode(5);
+        head->next->next->next->next->next = new ListNode(6);
+
+        ListNode* result = obj.middleNode(head);
+
+        cout << "Middle node of the linked list: ";
+        while (result != nullptr) {
+            cout << result->val << " ";
+            result = result->next;
+        }
+        cout << endl;
+        cout << "Kompleksiteti kohor: O(n)\nKompleksiteti hapsinor: O(1)\n";
+        break;
+    }
+    case 7:
+    {
+        ListNode* head = new ListNode(1);
+        head->next = new ListNode(2);
+        head->next->next = new ListNode(3);
+        head->next->next->next = new ListNode(4);
+        head->next->next->next->next = new ListNode(5);
+        ListNode* current = head;
+        cout << "Linked list elements: ";
+        while (current != nullptr) {
+            cout << current->val << " ";
+            current = current->next;
+        }
+        cout << endl;
+
+        ListNode* reversedHead = obj.reverseList(head);
+
+        cout << "Reversed linked list: ";
+        while (reversedHead != nullptr) {
+            cout << reversedHead->val << " ";
+            reversedHead = reversedHead->next;
+        }
+        cout << endl;
+        cout << "Kompleksiteti kohor: O(n)\nKompleksiteti hapsinor: O(1)\n";
+        break;
+    }
+    case 8:
+    {
+        ListNode* head = new ListNode(1);
+        head->next = new ListNode(2);
+        head->next->next = new ListNode(6);
+        head->next->next->next = new ListNode(3);
+        head->next->next->next->next = new ListNode(4);
+        head->next->next->next->next->next = new ListNode(5);
+        head->next->next->next->next->next->next = new ListNode(6);
+        ListNode* current = head; 
+        cout << "Linked list elements: ";
+        while (current != nullptr) {
+            cout << current->val << " ";
+            current = current->next;
+        }
+        cout << endl;
+        ListNode* result = obj.removeElements(head, 6);
+
+        cout << "New linked list after removing elements: ";
+        while (result != nullptr) {
+            cout << result->val << " ";
+            ListNode* temp = result;
+            result = result->next;
+            delete temp;
+        }
+        cout << endl;
+        cout << "Kompleksiteti kohor: O(n)\nKompleksiteti hapsinor: O(n)\n";
+        break;
+    }
+    case 9:
+    {
+        ListNode* head = new ListNode(1);
+        head->next = new ListNode(1);
+        head->next->next = new ListNode(2);
+        ListNode* current = head;
+        cout << "Linked list elements: ";
+        while (current != nullptr) {
+            cout << current->val << " ";
+            current = current->next;
+        }
+        cout << endl;
+        ListNode* result = obj.deleteDuplicates(head);
+
+        cout << "New linked list after removing duplicates: ";
+        while (result != nullptr) {
+            cout << result->val << " ";
+            ListNode* temp = result;
+            result = result->next;
+            delete temp;
+        }
+        cout << endl;
+        cout << "Kompleksiteti kohor: O(n)\nKompleksiteti hapsinor: O(1)\n";
+        break;
+    }
+    case 10:
+    {
+        ListNode* head = new ListNode(1);
+        head->next = new ListNode(2);
+        head->next->next = new ListNode(2);
+        head->next->next->next = new ListNode(1);
+        ListNode* current = head;
+        cout << "Linked list elements: ";
+        while (current != nullptr) {
+            cout << current->val << " ";
+            current = current->next;
+        }cout << endl;
+        bool result = obj.isPalindrome(head);
+
+        cout << "Is the linked list a palindrome? " << (result ? "Yes" : "No") << endl;
+        cout << "Kompleksiteti kohor: O(n)\nKompleksiteti hapsinor: O(n)\n";
+        break;
+    }
+    case 11: 
+    {
+        vector<int> nums = { 2, 7, 11, 15 };
+        int target = 9;
+        cout << "Numbers: ";
+        for (int i = 0; i < nums.size(); i++) {
+            cout << nums.at(i) << " ";
+        }cout << endl;
+        cout << "Target: " << target << endl;
+        Solution obj;
+
+        vector<int> result = obj.twoSum(nums, target);
+        cout << "Indices of the two numbers: [" << result[0] << ", " << result[1] << "]" << endl;
+        cout << "Kompleksiteti kohor: O(n)\nKompleksiteti hapsinor: O(n)\n";
+        break;
+    }
+    case 12:
+    {
+        vector<int> nums = { 3, 0, 1 };
+        cout << "Numbers: ";
+        for (int i = 0; i < nums.size(); i++) {
+            cout << nums.at(i) << " ";
+        }cout << endl;
+        cout << "The missing number is: " << obj.missingNumber(nums) << endl;
+        cout << "Kompleksiteti kohor: O(n)\nKompleksiteti hapsinor: O(n)\n";
+        break;
+    }
+    case 13:
+    {
+        vector<int> nums = { 4, 3, 2, 7, 8, 2, 3, 1 };
+        cout << "Numbers:";
+        for (int i = 0; i < nums.size(); i++) {
+            cout << nums.at(i) << " ";
+        }
+        cout << endl;
+        vector<int> missingNumbers = obj.DisappearedNumbers(nums);
+        cout << "Missing Numbers: ";
+        for (int i = 0; i < missingNumbers.size(); i++) {
+            cout << missingNumbers.at(i) << " ";
+        }
+        cout << endl;
+        cout << "Kompleksiteti kohor: O(n)\nKompleksiteti hapsinor: O(n)\n";
+
+        break;
+    }
+    case 14:
+    {
+        string jewels = "aA";
+        string stones = "aAAbbbb";
+        cout << "Jewels: " << jewels << endl;
+        cout << "Stones: " << stones << endl;
+        Solution obj;
+        cout << "Number of jewels in stones: " << obj.numJewelsInStones(jewels, stones) << endl;
+        cout << "Kompleksiteti kohor O(m*n)\nKompleksiteti hapsinor: O(m)\n";
+        break;
+    }
+    case 15:
+    {
+
+        vector<int> nums1 = { 1, 2, 2, 1 };
+        vector<int> nums2 = { 2, 2 };
+        cout << "Nums1:";
+        for (int i = 0; i < nums1.size(); i++) {
+            cout << nums1.at(i) << " ";
+        }cout << endl;
+        cout << "Nums2:";
+        for (int i = 0; i < nums2.size(); i++) {
+            cout << nums2.at(i) << " ";
+        }cout << endl;
+        vector<int> result1 = s.intersection(nums1, nums2);
+        cout << "Intersection of nums1 and nums2: ";
+        for (int i = 0;i< result1.size();i++) {
+            cout << result1.at(i) << " ";
+        }
+        "Kompleksiteti kohor O(n)\nKompleksiteti hapsinor: O(n)\n";
+        cout << endl;
+        break;
+    }
+    case 16:
+    {
+        TreeNode* root = new TreeNode(3);
+        root->left = new TreeNode(9);
+        root->right = new TreeNode(20);
+        root->right->left = new TreeNode(15);
+        root->right->right = new TreeNode(7);
+        printTree(root);
+        cout << endl;
+        int depth = obj.maxDepth(root);
+
+        cout << "The maximum depth of the tree is: " << depth << endl;
+        cout << "Kompleksiteti kohor: O(n)\nKompleksieteti hapsinor: O(h)\n";
+        break;
+    }
+    case 17:
+    {
+        TreeNode* root1 = new TreeNode(1);
+        root1->left = new TreeNode(3);
+        root1->right = new TreeNode(2);
+        root1->left->left = new TreeNode(5);
+
+        TreeNode* root2 = new TreeNode(2);
+        root2->left = new TreeNode(1);
+        root2->right = new TreeNode(3);
+        root2->left->right = new TreeNode(4);
+        root2->right->right = new TreeNode(7);
+
+        Solution obj;
+        TreeNode* mergedTree = obj.mergeTrees(root1, root2);
+        cout << "First Tree: ";
+        printTree(root1);
+        cout << endl;
+        cout << "Second Tree: ";
+        printTree(root2);
+        cout << endl;
+
+        cout << "Merged tree: ";
+        if (mergedTree) {
+            queue<TreeNode*> q;
+            q.push(mergedTree);
+            while (!q.empty()) {
+                TreeNode* current = q.front();
+                q.pop();
+                cout << current->val << " ";
+                if (current->left) q.push(current->left);
+                if (current->right) q.push(current->right);
+            }
+        }
+        else {
+            cout << "Empty tree";
+        }
+        cout << endl;
+
+        cout << "Kompleksiteti kohor: O(n)\nKompleksiteti hapsinor: O(n)\n";
+        break;
+    }
+    case 18:
+    {
+            TreeNode* root = new TreeNode(3);
+            root->left = new TreeNode(9);
+            root->right = new TreeNode(20);
+            root->left->left = new TreeNode(15);
+            root->left->right = new TreeNode(0);
+            root->right->left = new TreeNode(0);
+            root->right->right = new TreeNode(7);
+            printTree(root);
+            cout << endl;
+            vector<double> averages = s.averageOfLevels(root);
+            cout << "Average of levels: ";
+            for (int i = 0; i < averages.size(); i++) {
+                cout << averages.at(i) << " ";
+            }
+            cout << "\nKompleksiteti kohor: O(n)\nKompleksiteti hapsinor: O(n)\n";
+            cout << endl;
+        break;
+    }
+    case 19:
+    {
+        TreeNode* p = new TreeNode(1);
+        p->left = new TreeNode(2);
+        p->right = new TreeNode(3);
+        p->left->left = new TreeNode(4);
+        p->left->right = new TreeNode(5);
+
+        TreeNode* q = new TreeNode(1);
+        q->left = new TreeNode(2);
+        q->right = new TreeNode(3);
+        q->left->left = new TreeNode(4);
+        q->left->right = new TreeNode(5);
+        printTree(p);
+        cout << endl;
+        printTree(q);
+        cout<< endl;
+
+        bool result = s.isSameTree(p, q);
+        if (result) {
+            cout << "The trees are the same." << endl;
+        }
+        else {
+            cout << "The trees are not the same." << endl;
+        }
+        cout << "Kompleksiteti kohor: O(n)\nKompleksiteti hapsinor: O(n)\n";
+        cout << endl;
+        break;
+    }
+    case 20:
+    {
+        Solution s;
+        TreeNode* root = new TreeNode(2);
+        root->left = new TreeNode(1);
+        root->right = new TreeNode(3);
+
+        cout << "Original tree:" << endl;
+        printTree(root);
+        cout << endl;
+
+        TreeNode* invertedRoot = s.invertTree(root);
+
+        cout << "Inverted tree:" << endl;
+        printTree(invertedRoot);
+        cout << endl;
+        cout << "Kompleksiteti kohor: O(n)\nKompleksiteti hapsinor: O(n)\n";
+        break;
+    }
+    default:
+        cout << "Zgjedhja nuk eshte e vlefshme!" << endl;
+        break;
+    }
+
+    return 0;
+}
